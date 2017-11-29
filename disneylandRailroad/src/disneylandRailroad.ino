@@ -1,74 +1,103 @@
 /*
  * Project disneylandRailroad
- * Description:
- * Author:
- * Date:
+ * Description: Loops LEDs around a strip to simulate the trains at Disneyland.
+ * Author: Tommy W Farley
+ * Date: November, 2017
  */
 #include <neopixel.h>
 
 #define PIXEL_COUNT 144
 #define PIXEL_PIN D6
 #define PIXEL_TYPE WS2812B
-#define TRAIN1_COLOR 255,255,0
-#define TRAIN2_COLOR 0,255,255
-#define TRAIN3_COLOR 255,0,255
-#define TRAIN_OFF 0,0,0
+
+#define TRAIN_COLOR 255,255,255
+#define TRAIN_OFF_COLOR 0,0,0
 #define TRAIN_LENGTH 8
+
+#define MAINST 36
+#define NEWORLEANS 72
+#define TOONTOWN 108
+#define TOMORROWLAND 144
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
 
 int waitTime = 75;
 
-int TRAIN1 = 0;
-int TRAIN1_OFF = TRAIN1 - TRAIN_LENGTH;
-int TRAIN2 = 48;
-int TRAIN2_OFF = TRAIN2 - TRAIN_LENGTH;
-int TRAIN3 = 96;
-int TRAIN3_OFF = TRAIN3 - TRAIN_LENGTH;
+int TRAIN1_POSITION = MAINST;
+int TRAIN1_OFF = TRAIN1_POSITION - TRAIN_LENGTH;
+int TRAIN2_POSITION = NEWORLEANS;
+int TRAIN2_OFF = TRAIN2_POSITION - TRAIN_LENGTH;
+int TRAIN3_POSITION = TOONTOWN;
+int TRAIN3_OFF = TRAIN3_POSITION - TRAIN_LENGTH;
+int TRAIN4_POSITION = TOMORROWLAND;
+int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
 
 void setup() {
   strip.begin();
   strip.show();
+  if(Time.isValid() != true){
+    Particle.syncTime();
+    SPARKLE(0,0,0, 0);
+    delay(second(3));
+    waitUntil(Particle.syncTimeDone);
+  }
+  Time.zone(-8);
 }
 
 // loop() runs over and over again, as quickly as it can execute.
+
 void loop() {
-    strip.setPixelColor(TRAIN1, TRAIN1_COLOR);
-    strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF);
-    strip.setPixelColor(TRAIN2, TRAIN2_COLOR);
-    strip.setPixelColor(TRAIN2_OFF, TRAIN_OFF);
-    strip.setPixelColor(TRAIN3, TRAIN3_COLOR);
-    strip.setPixelColor(TRAIN3_OFF, TRAIN_OFF);
-    strip.setBrightness(1);
-    strip.show();
+    TRAIN_CYCLE():
+}
+void TRAIN_CYCLE(){
+  strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
+  strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
+  strip.setPixelColor(TRAIN2_POSITION, TRAIN_COLOR);
+  strip.setPixelColor(TRAIN2_OFF, TRAIN_OFF_COLOR);
+  strip.setPixelColor(TRAIN3_POSITION, TRAIN_COLOR);
+  strip.setPixelColor(TRAIN3_OFF, TRAIN_OFF_COLOR);
+  strip.setPixelColor(TRAIN4_POSITION, TRAIN_COLOR);
+  strip.setPixelColor(TRAIN4_OFF, TRAIN_OFF_COLOR);
+  strip.setBrightness(1);
+  strip.show();
 
-    TRAIN1 ++;
-    TRAIN1_OFF ++;
-    TRAIN2 ++;
-    TRAIN2_OFF ++;
-    TRAIN3 ++;
-    TRAIN3_OFF ++;
-    strip.show();
+  TRAIN1_POSITION ++;
+  TRAIN1_OFF ++;
+  TRAIN2_POSITION ++;
+  TRAIN2_OFF ++;
+  TRAIN3_POSITION ++;
+  TRAIN3_OFF ++;
+  TRAIN4_POSITION ++;
+  TRAIN4_OFF ++;
+  strip.show();
 
-    if (TRAIN1 > PIXEL_COUNT) {
-      TRAIN1 = 0;
-    }
-    if (TRAIN1_OFF > PIXEL_COUNT) {
-      TRAIN1_OFF = 0;
-    }
-    if (TRAIN2 > PIXEL_COUNT) {
-      TRAIN2 = 0;
-    }
-    if (TRAIN2_OFF > PIXEL_COUNT) {
-      TRAIN2_OFF = 0;
-    }
-    if (TRAIN3 > PIXEL_COUNT) {
-      TRAIN3 = 0;
-    }
-    if (TRAIN3_OFF > PIXEL_COUNT) {
-      TRAIN3_OFF = 0;
-    }
+  if (TRAIN1_POSITION > PIXEL_COUNT) {
+    TRAIN1_POSITION = 0;
+  }
+  if (TRAIN1_OFF > PIXEL_COUNT) {
+    TRAIN1_OFF = 0;
+  }
+  if (TRAIN2_POSITION > PIXEL_COUNT) {
+    TRAIN2_POSITION = 0;
+  }
+  if (TRAIN2_OFF > PIXEL_COUNT) {
+    TRAIN2_OFF = 0;
+  }
+  if (TRAIN3_POSITION > PIXEL_COUNT) {
+    TRAIN3_POSITION = 0;
+  }
+  if (TRAIN3_OFF > PIXEL_COUNT) {
+    TRAIN3_OFF = 0;
+  }
 
-    strip.show();
-    delay(waitTime);
+  strip.show();
+  delay(waitTime);
+}
+
+void SPARKLE(byte red, byte green, byte blue, int SpeedDelay) {
+  int Pixel = random(PIXEL_COUNT);
+  setPixelColor(Pixel,red,green,blue);
+  strip.show();
+  delay(SpeedDelay);
+  setPixelColor(Pixel,0,0,0);
 }
