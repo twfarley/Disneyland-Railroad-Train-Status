@@ -92,6 +92,9 @@ void TRAIN_CYCLE(){
   if (TRAIN3_OFF > PIXEL_COUNT) {
     TRAIN3_OFF = 0;
   }
+  if (TRAIN4_OFF > PIXEL_COUNT) {
+    TRAIN4_OFF = 0;
+  }
   strip.show();
 
   delay(waitTime);
