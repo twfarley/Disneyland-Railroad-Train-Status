@@ -21,7 +21,7 @@
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
 
-int waitTime = 75;
+int waitTime = Time.second() + 12.5;
 
 int TRAIN1_POSITION = MAINST;
 int TRAIN1_OFF = TRAIN1_POSITION - TRAIN_LENGTH;
@@ -37,18 +37,21 @@ void setup() {
   strip.show();
   if(Time.isValid() != true){
     Particle.syncTime();
-    SPARKLE(0,0,0, 0);
-    delay(second(3));
     waitUntil(Particle.syncTimeDone);
   }
   Time.zone(-8);
+  int SPARKLE_OFF_TIME = (Time.second() + 3);
+  while (Time.second() < SPARKLE_OFF_TIME) {
+    SPARKLE(0,0,0, 0);
+  }
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 
 void loop() {
-    TRAIN_CYCLE():
+    TRAIN_CYCLE();
 }
+
 void TRAIN_CYCLE(){
   strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
   strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
@@ -89,15 +92,15 @@ void TRAIN_CYCLE(){
   if (TRAIN3_OFF > PIXEL_COUNT) {
     TRAIN3_OFF = 0;
   }
-
   strip.show();
+
   delay(waitTime);
 }
 
 void SPARKLE(byte red, byte green, byte blue, int SpeedDelay) {
-  int Pixel = random(PIXEL_COUNT);
-  setPixelColor(Pixel,red,green,blue);
+  int SPARKLE_PIXEL = random(PIXEL_COUNT);
+  strip.setPixelColor(SPARKLE_PIXEL,red,green,blue);
   strip.show();
   delay(SpeedDelay);
-  setPixelColor(Pixel,0,0,0);
+  strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
 }
