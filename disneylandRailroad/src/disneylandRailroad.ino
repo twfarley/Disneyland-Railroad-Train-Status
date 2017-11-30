@@ -10,7 +10,7 @@
 #define PIXEL_PIN D6
 #define PIXEL_TYPE WS2812B
 
-#define TRAIN_COLOR 255,255,255
+#define TRAIN_COLOR 255,220,94
 #define TRAIN_OFF_COLOR 0,0,0
 #define TRAIN_LENGTH 8
 
@@ -106,4 +106,19 @@ void SPARKLE(byte red, byte green, byte blue, int SpeedDelay) {
   strip.show();
   delay(SpeedDelay);
   strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
+}
+
+String MONTH_COLOR{
+  uint32_t January = strip.Color(173,204,255); //light blue
+  uint32_t February = strip.Color(255,0,0); //red
+  uint32_t March = strip.Color(44,237,37); //clover green
+  uint32_t April = strip.Color(0,255,174); //teal
+  uint32_t May = strip.Color(255,0,255); //magenta
+  uint32_t June = strip.Color(0,255,100); //light green
+  uint32_t July = strip.Color(0,255,0); //green
+  uint32_t August = strip.Color(255,200,0); //yellow
+  uint32_t September = strip.Color(255,180,0); //light orange
+  uint32_t October = strip.Color(255,110,0); //orange
+  uint32_t November = strip.Color(150,0,255); //purple
+  uint32_t December = strip.Color(0,0,255); //blue
 }
