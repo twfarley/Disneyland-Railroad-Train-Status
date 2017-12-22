@@ -10,18 +10,20 @@
 #define PIXEL_PIN D6
 #define PIXEL_TYPE WS2812B
 
-#define TRAIN_ALTCOLOR 255,220,94
+//#define TRAIN_ALTCOLOR 255,220,94
 #define TRAIN_OFF_COLOR 0,0,0
-#define TRAIN_LENGTH 8
+#define TRAIN_LENGTH 1
 
-#define MAINST 36
-#define NEWORLEANS 72
-#define TOONTOWN 108
-#define TOMORROWLAND 144
+#define LOOPTIME 3600
+
+#define NEWORLEANS 42
+#define TOONTOWN 78
+#define TOMORROWLAND 116
+#define MAINST 8
 
 #define JAN 173,204,255 //light blue
 #define FEB 255,160,226 //pink
-#define MAR 44,237,37 //clover green
+#define MAR 44,255,37 //clover green
 #define APR 0,255,174 //teal
 #define MAY 255,0,255 //magenta
 #define JUN 0,255,100 //light green
@@ -34,11 +36,16 @@
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
 
-int WAITTIME = Time.second() + 12.5;
+int WAITTIME = Time.second() + LOOPTIME;
+/*30 minutes to get around the whole track
+30minutes * 60seconds = 1800seconds
+1800seconds / 144 lights = 12.5 seconds per light */
 
 uint32_t TRAIN_COLOR = strip.Color(255, 255, 255);
+uint32_t TRAIN_ALTCOLOR = strip.Color(255, 255, 255);
 
 int CURRENT_MONTH = Time.month();
+int DAYTIME = Time.hour();
 
 int TRAIN1_POSITION = MAINST;
 int TRAIN1_OFF = TRAIN1_POSITION - TRAIN_LENGTH;
@@ -52,59 +59,52 @@ int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
 void setup() {
   strip.begin();
   strip.show();
-  if(Time.isValid() != true){
-    Particle.syncTime();
-    waitUntil(Particle.syncTimeDone);
-  }
-  Time.zone(-8);
-  int SPARKLE_OFF_TIME = (Time.second() + 3);
-  while (Time.second() < SPARKLE_OFF_TIME) {
-    SPARKLE(0,0,0,0);
-  }
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 
 void loop() {
-    TRAIN_CYCLE();
+  //SPARKLE(255,255,255,25);
+  TRAIN_CYCLE();
 }
 
 void TRAIN_CYCLE(){
   if (CURRENT_MONTH == 1) {
-    TRAIN_COLOR = JAN;
+    TRAIN_ALTCOLOR = strip.Color(JAN);
   } //if CURRENT_MONTH doesn't work then just use Time.month() here.
   if (CURRENT_MONTH == 2) {
-    TRAIN_COLOR = FEB;
+    TRAIN_ALTCOLOR = strip.Color(FEB);
   }
   if (CURRENT_MONTH == 3) {
-    TRAIN_COLOR = MAR;
+    TRAIN_ALTCOLOR = strip.Color(MAR);
   }
   if (CURRENT_MONTH == 4) {
-    TRAIN_COLOR = APR;
+    TRAIN_ALTCOLOR = strip.Color(APR);
   }
   if (CURRENT_MONTH == 5) {
-    TRAIN_COLOR = MAY;
+    TRAIN_ALTCOLOR = strip.Color(MAY);
   }
   if (CURRENT_MONTH == 6) {
-    TRAIN_COLOR = JUN;
+    TRAIN_ALTCOLOR = strip.Color(JUN);
   }
   if (CURRENT_MONTH == 7) {
-    TRAIN_COLOR = JUL;
+    TRAIN_ALTCOLOR = strip.Color(JUL);
   }
   if (CURRENT_MONTH == 8) {
-    TRAIN_COLOR = AUG;
+    TRAIN_ALTCOLOR = strip.Color(AUG);
   }
   if (CURRENT_MONTH == 9) {
-    TRAIN_COLOR = SEP;
+    TRAIN_ALTCOLOR = strip.Color(SEP);
   }
   if (CURRENT_MONTH == 10) {
-    TRAIN_COLOR = OCT;
+    TRAIN_ALTCOLOR = strip.Color(OCT);
   }
   if (CURRENT_MONTH == 11) {
-    TRAIN_COLOR = NOV;
+    TRAIN_ALTCOLOR = strip.Color(NOV);
   }
   if (CURRENT_MONTH == 12) {
-    TRAIN_COLOR = DEC;
+    TRAIN_ALTCOLOR = strip.Color(DEC);
+    TRAIN_COLOR = strip.Color(MAR);
   }
 
   strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
@@ -115,7 +115,7 @@ void TRAIN_CYCLE(){
   strip.setPixelColor(TRAIN3_OFF, TRAIN_OFF_COLOR);
   strip.setPixelColor(TRAIN4_POSITION, TRAIN_ALTCOLOR);
   strip.setPixelColor(TRAIN4_OFF, TRAIN_OFF_COLOR);
-  strip.setBrightness(1);
+  strip.setBrightness(32);
   strip.show();
 
   TRAIN1_POSITION ++;
@@ -146,6 +146,9 @@ void TRAIN_CYCLE(){
   if (TRAIN3_OFF > PIXEL_COUNT - 1) {
     TRAIN3_OFF = 0;
   }
+  if (TRAIN4_POSITION > PIXEL_COUNT - 1) {
+    TRAIN4_POSITION = 0;
+  }
   if (TRAIN4_OFF > PIXEL_COUNT - 1) {
     TRAIN4_OFF = 0;
   }
@@ -160,4 +163,8 @@ void SPARKLE(byte red, byte green, byte blue, int SpeedDelay) {
   strip.show();
   delay(SpeedDelay);
   strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
+}
+
+void TRAINS_STOP(){
+  strip.setPixelColor(0,0,0,0);
 }
