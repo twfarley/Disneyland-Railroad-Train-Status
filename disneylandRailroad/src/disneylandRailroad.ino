@@ -157,11 +157,25 @@ void TRAIN_CYCLE(){
   delay(WAITTIME);
 }
 
-void SPARKLE(byte red, byte green, byte blue, int SpeedDelay) {
+void SPARKLE() {
   int SPARKLE_PIXEL = random(PIXEL_COUNT);
-  strip.setPixelColor(SPARKLE_PIXEL,red,green,blue);
-  strip.show();
-  delay(SpeedDelay);
+  int RSPARKLE = random(255);
+  int GSPARKLE = random(255);
+  int BSPARKLE = random(255);
+  int BLOOMTIME = random(100);
+  for (int i=220; i<255; i++) {
+     strip.setBrightness(i);
+     strip.setPixelColor(SPARKLE_PIXEL,RSPARKLE,GSPARKLE,BSPARKLE);
+     strip.show();
+     delay(2);
+   }
+  for (int i=255; i>0; i--) {
+    strip.setBrightness(i);
+    //strip.setPixelColor(SPARKLE_PIXEL,i,0,0);
+    strip.show();
+    delay(4);
+  }
+  delay(BLOOMTIME);
   strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
 }
 
