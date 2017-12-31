@@ -10,16 +10,24 @@
 #define PIXEL_PIN D6
 #define PIXEL_TYPE WS2812B
 
-//#define TRAIN_ALTCOLOR 255,220,94
 #define TRAIN_OFF_COLOR 0,0,0
 #define TRAIN_LENGTH 1
+//number of pixels each train should be
 
-#define LOOPTIME 3600
+#define LOOPTIME 1800
+//time it takes to go around the track in seconds
 
 #define NEWORLEANS 42
 #define TOONTOWN 78
 #define TOMORROWLAND 116
 #define MAINST 8
+//positions of each station
+
+#define OPENTIME 8
+#define CLOSETIME 21
+#define SPARKLE_RUNTIME 20
+//hours that the animations should start and stop.
+//runtime is how long the fireworks (sparkle) will run
 
 #define JAN 173,204,255 //light blue
 #define FEB 255,160,226 //pink
@@ -37,12 +45,12 @@
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
 
 int WAITTIME = Time.second() + LOOPTIME;
-/*30 minutes to get around the whole track
-30minutes * 60seconds = 1800seconds
-1800seconds / 144 lights = 12.5 seconds per light */
+// 30 minutes to get around the whole track
+// 30 minutes * 60 seconds = 1800 seconds
 
 uint32_t TRAIN_COLOR = strip.Color(255, 255, 255);
 uint32_t TRAIN_ALTCOLOR = strip.Color(255, 255, 255);
+//sets the trains to white as default
 
 int CURRENT_MONTH = Time.month();
 int DAYTIME = Time.hour();
@@ -59,19 +67,20 @@ int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
 void setup() {
   strip.begin();
   strip.show();
+  Time.zone(-8);
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 
 void loop() {
-  //SPARKLE(255,255,255,25);
+  SPARKLE();
   TRAIN_CYCLE();
 }
 
 void TRAIN_CYCLE(){
   if (CURRENT_MONTH == 1) {
     TRAIN_ALTCOLOR = strip.Color(JAN);
-  } //if CURRENT_MONTH doesn't work then just use Time.month() here.
+  }
   if (CURRENT_MONTH == 2) {
     TRAIN_ALTCOLOR = strip.Color(FEB);
   }
@@ -107,54 +116,54 @@ void TRAIN_CYCLE(){
     TRAIN_COLOR = strip.Color(MAR);
   }
 
-  strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
-  strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
-  strip.setPixelColor(TRAIN2_POSITION, TRAIN_ALTCOLOR);
-  strip.setPixelColor(TRAIN2_OFF, TRAIN_OFF_COLOR);
-  strip.setPixelColor(TRAIN3_POSITION, TRAIN_COLOR);
-  strip.setPixelColor(TRAIN3_OFF, TRAIN_OFF_COLOR);
-  strip.setPixelColor(TRAIN4_POSITION, TRAIN_ALTCOLOR);
-  strip.setPixelColor(TRAIN4_OFF, TRAIN_OFF_COLOR);
-  strip.setBrightness(32);
-  strip.show();
+  if (Time.hour() >= OPENTIME && Time.hour() < CLOSETIME) {
+    strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
+    strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
+    strip.setPixelColor(TRAIN2_POSITION, TRAIN_ALTCOLOR);
+    strip.setPixelColor(TRAIN2_OFF, TRAIN_OFF_COLOR);
+    strip.setPixelColor(TRAIN3_POSITION, TRAIN_COLOR);
+    strip.setPixelColor(TRAIN3_OFF, TRAIN_OFF_COLOR);
+    strip.setPixelColor(TRAIN4_POSITION, TRAIN_ALTCOLOR);
+    strip.setPixelColor(TRAIN4_OFF, TRAIN_OFF_COLOR);
+    strip.show();
 
-  TRAIN1_POSITION ++;
-  TRAIN1_OFF ++;
-  TRAIN2_POSITION ++;
-  TRAIN2_OFF ++;
-  TRAIN3_POSITION ++;
-  TRAIN3_OFF ++;
-  TRAIN4_POSITION ++;
-  TRAIN4_OFF ++;
-  strip.show();
+    TRAIN1_POSITION ++;
+    TRAIN1_OFF ++;
+    TRAIN2_POSITION ++;
+    TRAIN2_OFF ++;
+    TRAIN3_POSITION ++;
+    TRAIN3_OFF ++;
+    TRAIN4_POSITION ++;
+    TRAIN4_OFF ++;
+    strip.show();
 
-  if (TRAIN1_POSITION > PIXEL_COUNT - 1) {
-    TRAIN1_POSITION = 0;
+    if (TRAIN1_POSITION > PIXEL_COUNT - 1) {
+      TRAIN1_POSITION = 0;
+    }
+    if (TRAIN1_OFF > PIXEL_COUNT - 1) {
+      TRAIN1_OFF = 0;
+    }
+    if (TRAIN2_POSITION > PIXEL_COUNT - 1) {
+      TRAIN2_POSITION = 0;
+    }
+    if (TRAIN2_OFF > PIXEL_COUNT - 1) {
+      TRAIN2_OFF = 0;
+    }
+    if (TRAIN3_POSITION > PIXEL_COUNT - 1) {
+      TRAIN3_POSITION = 0;
+    }
+    if (TRAIN3_OFF > PIXEL_COUNT - 1) {
+      TRAIN3_OFF = 0;
+    }
+    if (TRAIN4_POSITION > PIXEL_COUNT - 1) {
+      TRAIN4_POSITION = 0;
+    }
+    if (TRAIN4_OFF > PIXEL_COUNT - 1) {
+      TRAIN4_OFF = 0;
+    }
+    strip.show();
+    delay(WAITTIME);
   }
-  if (TRAIN1_OFF > PIXEL_COUNT - 1) {
-    TRAIN1_OFF = 0;
-  }
-  if (TRAIN2_POSITION > PIXEL_COUNT - 1) {
-    TRAIN2_POSITION = 0;
-  }
-  if (TRAIN2_OFF > PIXEL_COUNT - 1) {
-    TRAIN2_OFF = 0;
-  }
-  if (TRAIN3_POSITION > PIXEL_COUNT - 1) {
-    TRAIN3_POSITION = 0;
-  }
-  if (TRAIN3_OFF > PIXEL_COUNT - 1) {
-    TRAIN3_OFF = 0;
-  }
-  if (TRAIN4_POSITION > PIXEL_COUNT - 1) {
-    TRAIN4_POSITION = 0;
-  }
-  if (TRAIN4_OFF > PIXEL_COUNT - 1) {
-    TRAIN4_OFF = 0;
-  }
-  strip.show();
-
-  delay(WAITTIME);
 }
 
 void SPARKLE() {
@@ -163,22 +172,20 @@ void SPARKLE() {
   int GSPARKLE = random(255);
   int BSPARKLE = random(255);
   int BLOOMTIME = random(100);
-  for (int i=220; i<255; i++) {
-     strip.setBrightness(i);
-     strip.setPixelColor(SPARKLE_PIXEL,RSPARKLE,GSPARKLE,BSPARKLE);
-     strip.show();
-     delay(2);
-   }
-  for (int i=255; i>0; i--) {
-    strip.setBrightness(i);
-    //strip.setPixelColor(SPARKLE_PIXEL,i,0,0);
-    strip.show();
-    delay(4);
+  while (Time.hour() == CLOSETIME && Time.minute() <= SPARKLE_RUNTIME) {
+    for (int i=220; i<255; i++) {
+       strip.setBrightness(i);
+       strip.setPixelColor(SPARKLE_PIXEL,RSPARKLE,GSPARKLE,BSPARKLE);
+       strip.show();
+       delay(2);
+     }
+    for (int i=255; i>0; i--) {
+      strip.setBrightness(i);
+      //strip.setPixelColor(SPARKLE_PIXEL,i,0,0);
+      strip.show();
+      delay(4);
+    }
+    delay(BLOOMTIME);
+    strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
   }
-  delay(BLOOMTIME);
-  strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
-}
-
-void TRAINS_STOP(){
-  strip.setPixelColor(0,0,0,0);
 }
