@@ -25,12 +25,12 @@
 
 #define OPENTIME 8
 #define CLOSETIME 21
-#define SPARKLE_RUNTIME 20
+#define SPARKLE_RUNTIME 30
 //hours that the animations should start and stop.
 //runtime is how long the fireworks (sparkle) will run
 
 #define JAN 173,204,255 //light blue
-#define FEB 255,160,226 //pink
+#define FEB 255,72,72 //red
 #define MAR 44,255,37 //clover green
 #define APR 0,255,174 //teal
 #define MAY 255,0,255 //magenta
@@ -73,6 +73,7 @@ void setup() {
 // loop() runs over and over again, as quickly as it can execute.
 
 void loop() {
+  Particle.syncTime();
   SPARKLE();
   TRAIN_CYCLE();
 }
@@ -171,9 +172,9 @@ void SPARKLE() {
   int RSPARKLE = random(255);
   int GSPARKLE = random(255);
   int BSPARKLE = random(255);
-  int BLOOMTIME = random(100);
-  while (Time.hour() == CLOSETIME && Time.minute() <= SPARKLE_RUNTIME) {
-    for (int i=220; i<255; i++) {
+  int BLOOMTIME = random(50);
+  if (Time.hour() == CLOSETIME && Time.minute() <= SPARKLE_RUNTIME) {
+    for (int i=180; i<255; i++) {
        strip.setBrightness(i);
        strip.setPixelColor(SPARKLE_PIXEL,RSPARKLE,GSPARKLE,BSPARKLE);
        strip.show();
@@ -183,7 +184,7 @@ void SPARKLE() {
       strip.setBrightness(i);
       //strip.setPixelColor(SPARKLE_PIXEL,i,0,0);
       strip.show();
-      delay(4);
+      delay(8);
     }
     delay(BLOOMTIME);
     strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
