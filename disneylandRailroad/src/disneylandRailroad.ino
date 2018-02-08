@@ -6,7 +6,7 @@
  */
 #include <neopixel.h>
 
-#define PIXEL_COUNT 144
+#define PIXEL_COUNT 148
 #define PIXEL_PIN D6
 #define PIXEL_TYPE WS2812B
 
@@ -17,10 +17,10 @@
 #define LOOPTIME 1800
 //time it takes to go around the track in seconds
 
-#define NEWORLEANS 42
-#define TOONTOWN 78
-#define TOMORROWLAND 116
-#define MAINST 8
+#define NEWORLEANS 45
+#define TOONTOWN 85
+#define TOMORROWLAND 123
+#define MAINST 15
 //positions of each station
 
 #define OPENTIME 8
@@ -30,7 +30,7 @@
 //runtime is how long the fireworks (sparkle) will run
 
 #define JAN 173,204,255 //light blue
-#define FEB 255,72,72 //red
+#define FEB 255,72,72 //pink
 #define MAR 44,255,37 //clover green
 #define APR 0,255,174 //teal
 #define MAY 255,0,255 //magenta
@@ -53,6 +53,7 @@ uint32_t TRAIN_ALTCOLOR = strip.Color(255, 255, 255);
 //sets the trains to white as default
 
 int CURRENT_MONTH = Time.month();
+int CURRENT_DAY = Time.day();
 int DAYTIME = Time.hour();
 
 int TRAIN1_POSITION = MAINST;
@@ -67,29 +68,32 @@ int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
 void setup() {
   strip.begin();
   strip.show();
-  Time.zone(-8);
 }
 
 // loop() runs over and over again, as quickly as it can execute.
 
 void loop() {
   Particle.syncTime();
+  Time.zone(-8);
+  Serial.println(Time.day());
   SPARKLE();
   TRAIN_CYCLE();
 }
 
 void TRAIN_CYCLE(){
+  strip.setBrightness(200);
   if (CURRENT_MONTH == 1) {
     TRAIN_ALTCOLOR = strip.Color(JAN);
   }
   if (CURRENT_MONTH == 2) {
     TRAIN_ALTCOLOR = strip.Color(FEB);
+    TRAIN_COLOR = strip.Color(DEC);
   }
   if (CURRENT_MONTH == 3) {
     TRAIN_ALTCOLOR = strip.Color(MAR);
   }
-  if (CURRENT_MONTH == 4) {
-    TRAIN_ALTCOLOR = strip.Color(APR);
+  if (CURRENT_MONTH == 2 && CURRENT_DAY == 8) {
+    TRAIN_ALTCOLOR = strip.Color(random(255),random(255),random(255));
   }
   if (CURRENT_MONTH == 5) {
     TRAIN_ALTCOLOR = strip.Color(MAY);
