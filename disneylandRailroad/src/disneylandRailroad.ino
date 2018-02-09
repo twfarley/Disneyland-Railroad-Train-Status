@@ -6,7 +6,7 @@
  */
 #include <neopixel.h>
 
-#define PIXEL_COUNT 148
+#define PIXEL_COUNT 144
 #define PIXEL_PIN D6
 #define PIXEL_TYPE WS2812B
 
@@ -66,6 +66,8 @@ int TRAIN4_POSITION = TOMORROWLAND;
 int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
 
 void setup() {
+  //Particle.syncTime();
+  Time.zone(-8);
   strip.begin();
   strip.show();
 }
@@ -73,11 +75,12 @@ void setup() {
 // loop() runs over and over again, as quickly as it can execute.
 
 void loop() {
-  Particle.syncTime();
-  Time.zone(-8);
-  Serial.println(Time.day());
-  SPARKLE();
-  TRAIN_CYCLE();
+  if (CURRENT_MONTH == 2 && CURRENT_DAY == 9){
+    RAINBOW(5);
+  } else {
+    TRAIN_CYCLE();
+    SPARKLE();
+  }
 }
 
 void TRAIN_CYCLE(){
@@ -92,8 +95,8 @@ void TRAIN_CYCLE(){
   if (CURRENT_MONTH == 3) {
     TRAIN_ALTCOLOR = strip.Color(MAR);
   }
-  if (CURRENT_MONTH == 2 && CURRENT_DAY == 8) {
-    TRAIN_ALTCOLOR = strip.Color(random(255),random(255),random(255));
+  if (CURRENT_MONTH == 4) {
+    TRAIN_ALTCOLOR = strip.Color(APR);
   }
   if (CURRENT_MONTH == 5) {
     TRAIN_ALTCOLOR = strip.Color(MAY);
@@ -193,4 +196,39 @@ void SPARKLE() {
     delay(BLOOMTIME);
     strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
   }
+}
+
+void RAINBOW(int SpeedDelay) {
+  byte *c;
+  uint16_t i, j;
+  for(j=0; j<256*5; j++) { // 5 cycles of all colors on wheel
+    for(i=0; i< PIXEL_COUNT; i++) {
+      c=Wheel(((i * 256 / PIXEL_COUNT) + j) & 255);
+      strip.setPixelColor(i, *c, *(c+1), *(c+2));
+    }
+    strip.show();
+    delay(SpeedDelay);
+  }
+}
+
+byte * Wheel(byte WheelPos) {
+  static byte c[3];
+
+  if(WheelPos < 85) {
+   c[0]=WheelPos * 3;
+   c[1]=255 - WheelPos * 3;
+   c[2]=0;
+  } else if(WheelPos < 170) {
+   WheelPos -= 85;
+   c[0]=255 - WheelPos * 3;
+   c[1]=0;
+   c[2]=WheelPos * 3;
+  } else {
+   WheelPos -= 170;
+   c[0]=0;
+   c[1]=WheelPos * 3;
+   c[2]=255 - WheelPos * 3;
+  }
+
+  return c;
 }
