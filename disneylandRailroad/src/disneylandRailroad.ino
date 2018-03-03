@@ -14,7 +14,7 @@
 #define TRAIN_LENGTH 1
 //number of pixels each train should be
 
-#define LOOPTIME 1800
+#define LOOPTIME 600
 //time it takes to go around the track in seconds
 
 #define NEWORLEANS 45
@@ -66,7 +66,6 @@ int TRAIN4_POSITION = TOMORROWLAND;
 int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
 
 void setup() {
-  //Particle.syncTime();
   Time.zone(-8);
   strip.begin();
   strip.show();
@@ -75,7 +74,8 @@ void setup() {
 // loop() runs over and over again, as quickly as it can execute.
 
 void loop() {
-  if (CURRENT_MONTH == 2 && CURRENT_DAY == 9){
+  Particle.syncTime();
+  if (CURRENT_MONTH == 4 && CURRENT_DAY == 18){
     RAINBOW(5);
   } else {
     TRAIN_CYCLE();
