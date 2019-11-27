@@ -1,3 +1,5 @@
+
+
 /*
  * Project disneylandRailroad
  * Description: Loops LEDs around a strip to simulate the trains at Disneyland.
@@ -14,7 +16,7 @@
 #define TRAIN_LENGTH 1
 //number of pixels each train should be
 
-#define LOOPTIME 600
+#define LOOPTIME 300
 //time it takes to go around the track in seconds
 
 #define NEWORLEANS 45
@@ -38,8 +40,8 @@
 #define JUL 0,255,0 //green
 #define AUG 255,200,0 //yellow
 #define SEP 255,180,0 //light orange
-#define OCT 255,110,0 //orange
-#define NOV 150,0,255 //purple
+#define OCT 150,0,255 //purple
+#define NOV 255,110,0 //orange
 #define DEC 255,0,0 //red
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
@@ -66,65 +68,73 @@ int TRAIN4_POSITION = TOMORROWLAND;
 int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
 
 void setup() {
-  Time.zone(-8);
-  strip.begin();
-  strip.show();
+    Serial.begin();
+    Time.zone(-8);
+    strip.begin();
+    strip.show();
+    Particle.syncTime();
+    Particle.function("trainon", controlTrain);
+}
+
+int controlTrain(String command) {
+    if (command=="on" || command=="1=1" || command == "1") {
+        Particle.publish("On");
+        strip.setBrightness(250);
+        strip.show();
+    } else if (command=="off" || command=="1=0" || command =="0") {
+        Particle.publish("Off");
+        strip.setBrightness(0);
+        strip.show();
+    }
 }
 
 // loop() runs over and over again, as quickly as it can execute.
-
 void loop() {
-  Particle.syncTime();
-  if (CURRENT_MONTH == 4 && CURRENT_DAY == 18){
-    RAINBOW(5);
-  } else {
     TRAIN_CYCLE();
-    SPARKLE();
-  }
 }
 
 void TRAIN_CYCLE(){
-  strip.setBrightness(200);
-  if (CURRENT_MONTH == 1) {
-    TRAIN_ALTCOLOR = strip.Color(JAN);
-  }
-  if (CURRENT_MONTH == 2) {
-    TRAIN_ALTCOLOR = strip.Color(FEB);
-    TRAIN_COLOR = strip.Color(DEC);
-  }
-  if (CURRENT_MONTH == 3) {
-    TRAIN_ALTCOLOR = strip.Color(MAR);
-  }
-  if (CURRENT_MONTH == 4) {
-    TRAIN_ALTCOLOR = strip.Color(APR);
-  }
-  if (CURRENT_MONTH == 5) {
-    TRAIN_ALTCOLOR = strip.Color(MAY);
-  }
-  if (CURRENT_MONTH == 6) {
-    TRAIN_ALTCOLOR = strip.Color(JUN);
-  }
-  if (CURRENT_MONTH == 7) {
-    TRAIN_ALTCOLOR = strip.Color(JUL);
-  }
-  if (CURRENT_MONTH == 8) {
-    TRAIN_ALTCOLOR = strip.Color(AUG);
-  }
-  if (CURRENT_MONTH == 9) {
-    TRAIN_ALTCOLOR = strip.Color(SEP);
-  }
-  if (CURRENT_MONTH == 10) {
-    TRAIN_ALTCOLOR = strip.Color(OCT);
-  }
-  if (CURRENT_MONTH == 11) {
-    TRAIN_ALTCOLOR = strip.Color(NOV);
-  }
-  if (CURRENT_MONTH == 12) {
-    TRAIN_ALTCOLOR = strip.Color(DEC);
-    TRAIN_COLOR = strip.Color(MAR);
-  }
+    if (CURRENT_MONTH == 1) {
+        TRAIN_ALTCOLOR = strip.Color(JAN);
+    }
+    if (CURRENT_MONTH == 2) {
+        TRAIN_ALTCOLOR = strip.Color(FEB);
+        TRAIN_COLOR = strip.Color(DEC);
+    }
+    if (CURRENT_MONTH == 3) {
+        TRAIN_ALTCOLOR = strip.Color(MAR);
+    }
+    if (CURRENT_MONTH == 4) {
+        TRAIN_ALTCOLOR = strip.Color(APR);
+    }
+    if (CURRENT_MONTH == 5) {
+        TRAIN_ALTCOLOR = strip.Color(MAY);
+    }
+    if (CURRENT_MONTH == 6) {
+        TRAIN_ALTCOLOR = strip.Color(JUN);
+    }
+    if (CURRENT_MONTH == 7) {
+        TRAIN_ALTCOLOR = strip.Color(JUL);
+    }
+    if (CURRENT_MONTH == 8) {
+        TRAIN_ALTCOLOR = strip.Color(AUG);
+    }
+    if (CURRENT_MONTH == 9) {
+        TRAIN_ALTCOLOR = strip.Color(SEP);
+    }
+    if (CURRENT_MONTH == 10) {
+        TRAIN_ALTCOLOR = strip.Color(OCT);
+        TRAIN_COLOR = strip.Color(MAR);
+    }
+    if (CURRENT_MONTH == 11) {
+        TRAIN_ALTCOLOR = strip.Color(NOV);
+        TRAIN_COLOR = strip.Color(AUG);
+    }
+    if (CURRENT_MONTH == 12) {
+        TRAIN_ALTCOLOR = strip.Color(DEC);
+        TRAIN_COLOR = strip.Color(MAR);
+    }
 
-  if (Time.hour() >= OPENTIME && Time.hour() < CLOSETIME) {
     strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
     strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
     strip.setPixelColor(TRAIN2_POSITION, TRAIN_ALTCOLOR);
@@ -146,89 +156,29 @@ void TRAIN_CYCLE(){
     strip.show();
 
     if (TRAIN1_POSITION > PIXEL_COUNT - 1) {
-      TRAIN1_POSITION = 0;
+        TRAIN1_POSITION = 0;
     }
     if (TRAIN1_OFF > PIXEL_COUNT - 1) {
-      TRAIN1_OFF = 0;
+        TRAIN1_OFF = 0;
     }
     if (TRAIN2_POSITION > PIXEL_COUNT - 1) {
-      TRAIN2_POSITION = 0;
+        TRAIN2_POSITION = 0;
     }
     if (TRAIN2_OFF > PIXEL_COUNT - 1) {
-      TRAIN2_OFF = 0;
+        TRAIN2_OFF = 0;
     }
     if (TRAIN3_POSITION > PIXEL_COUNT - 1) {
-      TRAIN3_POSITION = 0;
+        TRAIN3_POSITION = 0;
     }
     if (TRAIN3_OFF > PIXEL_COUNT - 1) {
-      TRAIN3_OFF = 0;
+        TRAIN3_OFF = 0;
     }
     if (TRAIN4_POSITION > PIXEL_COUNT - 1) {
-      TRAIN4_POSITION = 0;
+        TRAIN4_POSITION = 0;
     }
     if (TRAIN4_OFF > PIXEL_COUNT - 1) {
-      TRAIN4_OFF = 0;
+        TRAIN4_OFF = 0;
     }
     strip.show();
     delay(WAITTIME);
-  }
-}
-
-void SPARKLE() {
-  int SPARKLE_PIXEL = random(PIXEL_COUNT);
-  int RSPARKLE = random(255);
-  int GSPARKLE = random(255);
-  int BSPARKLE = random(255);
-  int BLOOMTIME = random(50);
-  if (Time.hour() == CLOSETIME && Time.minute() <= SPARKLE_RUNTIME) {
-    for (int i=180; i<255; i++) {
-       strip.setBrightness(i);
-       strip.setPixelColor(SPARKLE_PIXEL,RSPARKLE,GSPARKLE,BSPARKLE);
-       strip.show();
-       delay(2);
-     }
-    for (int i=255; i>0; i--) {
-      strip.setBrightness(i);
-      //strip.setPixelColor(SPARKLE_PIXEL,i,0,0);
-      strip.show();
-      delay(8);
-    }
-    delay(BLOOMTIME);
-    strip.setPixelColor(SPARKLE_PIXEL,0,0,0);
-  }
-}
-
-void RAINBOW(int SpeedDelay) {
-  byte *c;
-  uint16_t i, j;
-  for(j=0; j<256*5; j++) { // 5 cycles of all colors on wheel
-    for(i=0; i< PIXEL_COUNT; i++) {
-      c=Wheel(((i * 256 / PIXEL_COUNT) + j) & 255);
-      strip.setPixelColor(i, *c, *(c+1), *(c+2));
-    }
-    strip.show();
-    delay(SpeedDelay);
-  }
-}
-
-byte * Wheel(byte WheelPos) {
-  static byte c[3];
-
-  if(WheelPos < 85) {
-   c[0]=WheelPos * 3;
-   c[1]=255 - WheelPos * 3;
-   c[2]=0;
-  } else if(WheelPos < 170) {
-   WheelPos -= 85;
-   c[0]=255 - WheelPos * 3;
-   c[1]=0;
-   c[2]=WheelPos * 3;
-  } else {
-   WheelPos -= 170;
-   c[0]=0;
-   c[1]=WheelPos * 3;
-   c[2]=255 - WheelPos * 3;
-  }
-
-  return c;
 }
