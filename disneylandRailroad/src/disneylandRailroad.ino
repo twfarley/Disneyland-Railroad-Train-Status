@@ -38,10 +38,10 @@
 #define MAY 255,0,255 //magenta
 #define JUN 0,255,100 //light green
 #define JUL 0,255,0 //green
-#define AUG 255,200,0 //yellow
-#define SEP 255,180,0 //light orange
+#define AUG 252,252,0 //yellow
+#define SEP 250,150,0 //orange
 #define OCT 150,0,255 //purple
-#define NOV 255,110,0 //orange
+#define NOV 250,150,0 //orange
 #define DEC 255,0,0 //red
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
@@ -76,10 +76,11 @@ void setup() {
     Particle.function("trainon", controlTrain);
 }
 
+//HomeBridge implementation
 int controlTrain(String command) {
     if (command=="on" || command=="1=1" || command == "1") {
         Particle.publish("On");
-        strip.setBrightness(250);
+        strip.setBrightness(255);
         strip.show();
     } else if (command=="off" || command=="1=0" || command =="0") {
         Particle.publish("Off");
