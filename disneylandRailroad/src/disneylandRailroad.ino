@@ -17,36 +17,32 @@
 #define LOOPTIME 300
 //time it takes to go around the track in seconds
 
+int WAITTIME = Time.second() + LOOPTIME;
+// 30 minutes to get around the whole track
+// 30 minutes * 60 seconds = 1800 seconds
+
 #define NEWORLEANS 45
 #define TOONTOWN 85
 #define TOMORROWLAND 123
 #define MAINST 15
 //pixel number positions of each station
 
-#define OPENTIME 8
-#define CLOSETIME 21
-#define SPARKLE_RUNTIME 30
-//hours that the animations should start and stop.
-//runtime is how long the fireworks (sparkle) will run
-
-#define JAN 173,204,255 //light blue
-#define FEB 255,72,72 //pink
-#define MAR 44,255,37 //clover green
-#define APR 0,255,174 //teal
-#define MAY 255,0,255 //magenta
-#define JUN 0,255,100 //light green
-#define JUL 0,255,0 //green
-#define AUG 252,252,0 //yellow
+#define JAN 175,200,250 //light blue
+#define FEB 250,75,75 //pink
+#define MAR 50,250,50 //clover green
+#define APR 0,250,175 //teal
+#define MAY 250,0,250 //magenta
+#define JUN 0,250,100 //light green
+#define JUL 0,250,0 //green
+#define AUG 250,250,0 //yellow
 #define SEP 250,150,0 //orange
-#define OCT 150,0,255 //purple
-#define NOV 250,150,0 //orange
-#define DEC 255,0,0 //red
+#define OCT 150,0,250 //purple
+#define NOV 250,100,0 //orange
+#define DEC 250,0,0 //red
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
 
-int WAITTIME = Time.second() + LOOPTIME;
-// 30 minutes to get around the whole track
-// 30 minutes * 60 seconds = 1800 seconds
+
 
 uint32_t TRAIN_COLOR = strip.Color(255, 255, 255);
 uint32_t TRAIN_ALTCOLOR = strip.Color(255, 255, 255);
@@ -96,55 +92,55 @@ void loop() {
 int SET_COLORS(){
     if (CURRENT_MONTH == 1) {
         TRAIN_ALTCOLOR = strip.Color(JAN);
-        Particle.publish("January");
+        Particle.publish("Running Trains with January");
     }
     if (CURRENT_MONTH == 2) {
         TRAIN_ALTCOLOR = strip.Color(FEB);
         TRAIN_COLOR = strip.Color(DEC);
-        Particle.publish("February");
+        Particle.publish("Running Trains with February");
     }
     if (CURRENT_MONTH == 3) {
         TRAIN_ALTCOLOR = strip.Color(MAR);
-        Particle.publish("March");
+        Particle.publish("Running Trains with March");
     }
     if (CURRENT_MONTH == 4) {
         TRAIN_ALTCOLOR = strip.Color(APR);
-        Particle.publish("April");
+        Particle.publish("Running Trains with April");
     }
     if (CURRENT_MONTH == 5) {
         TRAIN_ALTCOLOR = strip.Color(MAY);
-        Particle.publish("May");
+        Particle.publish("Running Trains with May");
     }
     if (CURRENT_MONTH == 6) {
         TRAIN_ALTCOLOR = strip.Color(JUN);
-        Particle.publish("June");
+        Particle.publish("Running Trains with June");
     }
     if (CURRENT_MONTH == 7) {
         TRAIN_ALTCOLOR = strip.Color(JUL);
-        Particle.publish("July");
+        Particle.publish("Running Trains with July");
     }
     if (CURRENT_MONTH == 8) {
         TRAIN_ALTCOLOR = strip.Color(AUG);
-        Particle.publish("August");
+        Particle.publish("Running Trains with August");
     }
     if (CURRENT_MONTH == 9) {
         TRAIN_ALTCOLOR = strip.Color(SEP);
-        Particle.publish("September");
+        Particle.publish("Running Trains with September");
     }
     if (CURRENT_MONTH == 10) {
         TRAIN_ALTCOLOR = strip.Color(OCT);
         TRAIN_COLOR = strip.Color(MAR);
-        Particle.publish("October");
+        Particle.publish("Running Trains with October");
     }
     if (CURRENT_MONTH == 11) {
         TRAIN_ALTCOLOR = strip.Color(NOV);
         TRAIN_COLOR = strip.Color(AUG);
-        Particle.publish("November");
+        Particle.publish("Running Trains with November");
     }
     if (CURRENT_MONTH == 12) {
         TRAIN_ALTCOLOR = strip.Color(DEC);
         TRAIN_COLOR = strip.Color(MAR);
-        Particle.publish("December");
+        Particle.publish("Running Trains with December");
     }
     strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
     strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
