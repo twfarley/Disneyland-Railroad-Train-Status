@@ -1,8 +1,6 @@
-
-
 /*
- * Project disneylandRailroad
- * Description: Loops LEDs around a strip to simulate the trains at Disneyland.
+ * Project Disneyland Railroad Map
+ * Description: Loops LEDs around an LED strip to simulate the trains at Disneyland.
  * Author: Tommy W Farley
  * Date: November, 2017
  */
@@ -13,7 +11,7 @@
 #define PIXEL_TYPE WS2812B
 
 #define TRAIN_OFF_COLOR 0,0,0
-#define TRAIN_LENGTH 1
+#define TRAIN_LENGTH 4
 //number of pixels each train should be
 
 #define LOOPTIME 300
@@ -23,7 +21,7 @@
 #define TOONTOWN 85
 #define TOMORROWLAND 123
 #define MAINST 15
-//positions of each station
+//pixel number positions of each station
 
 #define OPENTIME 8
 #define CLOSETIME 21
@@ -81,6 +79,7 @@ int controlTrain(String command) {
     if (command=="on" || command=="1=1" || command == "1") {
         Particle.publish("On");
         strip.setBrightness(255);
+        SET_COLORS();
         strip.show();
     } else if (command=="off" || command=="1=0" || command =="0") {
         Particle.publish("Off");
@@ -94,48 +93,59 @@ void loop() {
     TRAIN_CYCLE();
 }
 
-void TRAIN_CYCLE(){
+int SET_COLORS(){
     if (CURRENT_MONTH == 1) {
         TRAIN_ALTCOLOR = strip.Color(JAN);
+        Particle.publish("January");
     }
     if (CURRENT_MONTH == 2) {
         TRAIN_ALTCOLOR = strip.Color(FEB);
         TRAIN_COLOR = strip.Color(DEC);
+        Particle.publish("February");
     }
     if (CURRENT_MONTH == 3) {
         TRAIN_ALTCOLOR = strip.Color(MAR);
+        Particle.publish("March");
     }
     if (CURRENT_MONTH == 4) {
         TRAIN_ALTCOLOR = strip.Color(APR);
+        Particle.publish("April");
     }
     if (CURRENT_MONTH == 5) {
         TRAIN_ALTCOLOR = strip.Color(MAY);
+        Particle.publish("May");
     }
     if (CURRENT_MONTH == 6) {
         TRAIN_ALTCOLOR = strip.Color(JUN);
+        Particle.publish("June");
     }
     if (CURRENT_MONTH == 7) {
         TRAIN_ALTCOLOR = strip.Color(JUL);
+        Particle.publish("July");
     }
     if (CURRENT_MONTH == 8) {
         TRAIN_ALTCOLOR = strip.Color(AUG);
+        Particle.publish("August");
     }
     if (CURRENT_MONTH == 9) {
         TRAIN_ALTCOLOR = strip.Color(SEP);
+        Particle.publish("September");
     }
     if (CURRENT_MONTH == 10) {
         TRAIN_ALTCOLOR = strip.Color(OCT);
         TRAIN_COLOR = strip.Color(MAR);
+        Particle.publish("October");
     }
     if (CURRENT_MONTH == 11) {
         TRAIN_ALTCOLOR = strip.Color(NOV);
         TRAIN_COLOR = strip.Color(AUG);
+        Particle.publish("November");
     }
     if (CURRENT_MONTH == 12) {
         TRAIN_ALTCOLOR = strip.Color(DEC);
         TRAIN_COLOR = strip.Color(MAR);
+        Particle.publish("December");
     }
-
     strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
     strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
     strip.setPixelColor(TRAIN2_POSITION, TRAIN_ALTCOLOR);
@@ -145,7 +155,9 @@ void TRAIN_CYCLE(){
     strip.setPixelColor(TRAIN4_POSITION, TRAIN_ALTCOLOR);
     strip.setPixelColor(TRAIN4_OFF, TRAIN_OFF_COLOR);
     strip.show();
+}
 
+void TRAIN_CYCLE(){
     TRAIN1_POSITION ++;
     TRAIN1_OFF ++;
     TRAIN2_POSITION ++;
