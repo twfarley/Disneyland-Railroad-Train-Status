@@ -11,15 +11,13 @@
 #define PIXEL_TYPE WS2812B
 
 #define TRAIN_OFF_COLOR 0,0,0
-#define TRAIN_LENGTH 4
+#define TRAIN_LENGTH 14
 //number of pixels each train should be
 
-#define LOOPTIME 300
-//time it takes to go around the track in seconds
+#define LOOPTIME 30
+//time in seconds it takes to go around the track
 
 int WAITTIME = Time.second() + LOOPTIME;
-// 30 minutes to get around the whole track
-// 30 minutes * 60 seconds = 1800 seconds
 
 #define NEWORLEANS 45
 #define TOONTOWN 85
@@ -27,7 +25,7 @@ int WAITTIME = Time.second() + LOOPTIME;
 #define MAINST 15
 //pixel number positions of each station
 
-#define JAN 175,200,250 //light blue
+#define JAN 0,0,200 //light blue
 #define FEB 250,75,75 //pink
 #define MAR 50,250,50 //clover green
 #define APR 0,250,175 //teal
@@ -42,15 +40,11 @@ int WAITTIME = Time.second() + LOOPTIME;
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
 
-
-
 uint32_t TRAIN_COLOR = strip.Color(255, 255, 255);
 uint32_t TRAIN_ALTCOLOR = strip.Color(255, 255, 255);
 //sets the trains to white as default
 
 int CURRENT_MONTH = Time.month();
-int CURRENT_DAY = Time.day();
-int DAYTIME = Time.hour();
 
 int TRAIN1_POSITION = MAINST;
 int TRAIN1_OFF = TRAIN1_POSITION - TRAIN_LENGTH;
@@ -63,14 +57,15 @@ int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
 
 void setup() {
     Serial.begin();
+    Particle.syncTime();
     Time.zone(-8);
     strip.begin();
+    rainbowCycle(0);
+    SET_COLORS();
     strip.show();
-    Particle.syncTime();
     Particle.function("trainon", controlTrain);
 }
 
-//HomeBridge implementation
 int controlTrain(String command) {
     if (command=="on" || command=="1=1" || command == "1") {
         Particle.publish("On");
@@ -142,6 +137,9 @@ int SET_COLORS(){
         TRAIN_COLOR = strip.Color(MAR);
         Particle.publish("Running Trains with December");
     }
+}
+
+void TRAIN_CYCLE(){
     strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
     strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
     strip.setPixelColor(TRAIN2_POSITION, TRAIN_ALTCOLOR);
@@ -150,10 +148,7 @@ int SET_COLORS(){
     strip.setPixelColor(TRAIN3_OFF, TRAIN_OFF_COLOR);
     strip.setPixelColor(TRAIN4_POSITION, TRAIN_ALTCOLOR);
     strip.setPixelColor(TRAIN4_OFF, TRAIN_OFF_COLOR);
-    strip.show();
-}
-
-void TRAIN_CYCLE(){
+    
     TRAIN1_POSITION ++;
     TRAIN1_OFF ++;
     TRAIN2_POSITION ++;
@@ -163,6 +158,7 @@ void TRAIN_CYCLE(){
     TRAIN4_POSITION ++;
     TRAIN4_OFF ++;
     strip.show();
+    delay(WAITTIME);
 
     if (TRAIN1_POSITION > PIXEL_COUNT - 1) {
         TRAIN1_POSITION = 0;
@@ -188,6 +184,48 @@ void TRAIN_CYCLE(){
     if (TRAIN4_OFF > PIXEL_COUNT - 1) {
         TRAIN4_OFF = 0;
     }
+}
+
+void setAll(byte red, byte green, byte blue) {
+  for(int i = 0; i < PIXEL_COUNT; i++ ) {
+    strip.setPixelColor(i, red, green, blue); 
+  }
+  strip.show();
+}
+
+void rainbowCycle(int SpeedDelay) {
+  byte *c;
+  uint16_t i, j;
+
+  for(j=0; j<256*2; j++) { // 2 cycles of all colors on wheel
+    for(i=0; i< PIXEL_COUNT; i++) {
+      c=Wheel(((i * 256 / PIXEL_COUNT) + j) & 255);
+      strip.setPixelColor(i, *c, *(c+1), *(c+2));
+    }
     strip.show();
-    delay(WAITTIME);
+    delay(SpeedDelay);
+  }
+  setAll(0,0,0);
+}
+
+byte * Wheel(byte WheelPos) {
+  static byte c[3];
+  
+  if(WheelPos < 85) {
+   c[0]=WheelPos * 3;
+   c[1]=255 - WheelPos * 3;
+   c[2]=0;
+  } else if(WheelPos < 170) {
+   WheelPos -= 85;
+   c[0]=255 - WheelPos * 3;
+   c[1]=0;
+   c[2]=WheelPos * 3;
+  } else {
+   WheelPos -= 170;
+   c[0]=0;
+   c[1]=WheelPos * 3;
+   c[2]=255 - WheelPos * 3;
+  }
+
+  return c;
 }
