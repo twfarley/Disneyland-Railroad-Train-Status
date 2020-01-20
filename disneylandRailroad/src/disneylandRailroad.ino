@@ -10,41 +10,46 @@
 #define PIXEL_PIN D6
 #define PIXEL_TYPE WS2812B
 
-#define TRAIN_OFF_COLOR 0,0,0
-#define TRAIN_LENGTH 14
+#define TRAIN_LENGTH 18
 //number of pixels each train should be
+//144 / 8 (each color plus each off) = 18
 
 #define LOOPTIME 30
 //time in seconds it takes to go around the track
 
-int WAITTIME = Time.second() + LOOPTIME;
+int WAITTIME = LOOPTIME * 1000;
+//for sake of math since delay is measured in milliseconds
 
-#define NEWORLEANS 45
-#define TOONTOWN 85
-#define TOMORROWLAND 123
-#define MAINST 15
+#define MAINST 18
+#define NEWORLEANS 54
+#define TOONTOWN 90
+#define TOMORROWLAND 126
 //pixel number positions of each station
 
-#define JAN 0,0,200 //light blue
-#define FEB 250,75,75 //pink
-#define MAR 50,250,50 //clover green
-#define APR 0,250,175 //teal
-#define MAY 250,0,250 //magenta
-#define JUN 0,250,100 //light green
-#define JUL 0,250,0 //green
-#define AUG 250,250,0 //yellow
-#define SEP 250,150,0 //orange
-#define OCT 150,0,250 //purple
-#define NOV 250,100,0 //orange
-#define DEC 250,0,0 //red
+#define LIGHTBLUE 50,200,225 //light blue
+#define PINK 250,75,75 //pink
+#define GREEN 50,250,50 //clover green
+#define TEAL 0,250,175 //teal
+#define MAGENTA 250,0,250 //magenta
+#define LIGHTGREEN 0,250,100 //light green
+#define YELLOW 250,250,0 //yellow
+#define ORANGE 250,150,50 //orange
+#define PURPLE 150,0,250 //purple
+#define BLUE 0,0,250 //blue
+#define RED 250,0,0 //red
+#define WHITE 255,255,255 //white
+#define OFF 0,0,0 // black or off
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, PIXEL_TYPE);
 
-uint32_t TRAIN_COLOR = strip.Color(255, 255, 255);
-uint32_t TRAIN_ALTCOLOR = strip.Color(255, 255, 255);
+uint32_t TRAIN_COLOR = strip.Color(WHITE);
+uint32_t TRAIN_ALTCOLOR = strip.Color(WHITE);
+uint32_t TRAIN_OFF_COLOR = strip.Color(OFF);
+
 //sets the trains to white as default
 
 int CURRENT_MONTH = Time.month();
+int CURRENT_DATE = Time.day();
 
 int TRAIN1_POSITION = MAINST;
 int TRAIN1_OFF = TRAIN1_POSITION - TRAIN_LENGTH;
@@ -54,23 +59,25 @@ int TRAIN3_POSITION = TOONTOWN;
 int TRAIN3_OFF = TRAIN3_POSITION - TRAIN_LENGTH;
 int TRAIN4_POSITION = TOMORROWLAND;
 int TRAIN4_OFF = TRAIN4_POSITION - TRAIN_LENGTH;
+//setting start positions for trains
+
+bool FIRST_CHECK = false;
 
 void setup() {
     Serial.begin();
-    Particle.syncTime();
-    Time.zone(-8);
     strip.begin();
     rainbowCycle(0);
-    SET_COLORS();
+    FIRST_CHECK = false;
     strip.show();
-    Particle.function("trainon", controlTrain);
+    Particle.function("HomeKitControl", CONTROL_TRAIN);
+    Particle.variable("Date Checked", FIRST_CHECK);
 }
 
-int controlTrain(String command) {
+//Publishes a function to Particle to control with HomeBridge
+int CONTROL_TRAIN(String command) {
     if (command=="on" || command=="1=1" || command == "1") {
         Particle.publish("On");
-        strip.setBrightness(255);
-        SET_COLORS();
+        strip.setBrightness(250);
         strip.show();
     } else if (command=="off" || command=="1=0" || command =="0") {
         Particle.publish("Off");
@@ -84,62 +91,95 @@ void loop() {
     TRAIN_CYCLE();
 }
 
-int SET_COLORS(){
+void CHECK_DATE(){
+    if (FIRST_CHECK == false || CURRENT_DATE == 1) {
+        SET_ALL(OFF);
+        SET_COLORS();
+        FIRST_CHECK = true;
+    }
+}
+
+void SET_COLORS(){
     if (CURRENT_MONTH == 1) {
-        TRAIN_ALTCOLOR = strip.Color(JAN);
-        Particle.publish("Running Trains with January");
+        TRAIN_COLOR = strip.Color(BLUE);
+        TRAIN_ALTCOLOR = strip.Color(LIGHTBLUE);
+        TRAIN_OFF_COLOR = strip.Color(WHITE);
+        Particle.publish("Blue and White");
+        strip.show();
     }
     if (CURRENT_MONTH == 2) {
-        TRAIN_ALTCOLOR = strip.Color(FEB);
-        TRAIN_COLOR = strip.Color(DEC);
-        Particle.publish("Running Trains with February");
+        TRAIN_COLOR = strip.Color(PINK);
+        TRAIN_ALTCOLOR = strip.Color(RED);
+        Particle.publish("Pink and Red");
+        strip.show();
     }
     if (CURRENT_MONTH == 3) {
-        TRAIN_ALTCOLOR = strip.Color(MAR);
-        Particle.publish("Running Trains with March");
+        TRAIN_COLOR = strip.Color(GREEN);
+        TRAIN_ALTCOLOR = strip.Color(WHITE);
+        Particle.publish("Green and White");
+        strip.show();
     }
     if (CURRENT_MONTH == 4) {
-        TRAIN_ALTCOLOR = strip.Color(APR);
-        Particle.publish("Running Trains with April");
+        TRAIN_COLOR = strip.Color(TEAL);
+        TRAIN_ALTCOLOR = strip.Color(WHITE);
+        Particle.publish("Teal and White");
+        strip.show();
     }
     if (CURRENT_MONTH == 5) {
-        TRAIN_ALTCOLOR = strip.Color(MAY);
-        Particle.publish("Running Trains with May");
+        TRAIN_COLOR = strip.Color(MAGENTA);
+        TRAIN_ALTCOLOR = strip.Color(WHITE);
+        Particle.publish("Magenta and White");
+        strip.show();
     }
     if (CURRENT_MONTH == 6) {
-        TRAIN_ALTCOLOR = strip.Color(JUN);
-        Particle.publish("Running Trains with June");
+        TRAIN_COLOR = strip.Color(LIGHTGREEN);
+        TRAIN_ALTCOLOR = strip.Color(WHITE);
+        Particle.publish("Light Green and White");
+        strip.show();
     }
     if (CURRENT_MONTH == 7) {
-        TRAIN_ALTCOLOR = strip.Color(JUL);
-        Particle.publish("Running Trains with July");
+        TRAIN_COLOR = strip.Color(RED);
+        TRAIN_ALTCOLOR = strip.Color(BLUE);
+        TRAIN_OFF_COLOR = strip.Color(WHITE);
+        Particle.publish("Red, White and Blue");
+        strip.show();
     }
     if (CURRENT_MONTH == 8) {
-        TRAIN_ALTCOLOR = strip.Color(AUG);
-        Particle.publish("Running Trains with August");
+        TRAIN_COLOR = strip.Color(YELLOW);
+        TRAIN_ALTCOLOR = strip.Color(WHITE);
+        Particle.publish("Yellow and White");
+        strip.show();
     }
     if (CURRENT_MONTH == 9) {
-        TRAIN_ALTCOLOR = strip.Color(SEP);
-        Particle.publish("Running Trains with September");
+        TRAIN_COLOR = strip.Color(ORANGE);
+        TRAIN_ALTCOLOR = strip.Color(WHITE);
+        Particle.publish("Orange and WHITE");
+        strip.show();
     }
     if (CURRENT_MONTH == 10) {
-        TRAIN_ALTCOLOR = strip.Color(OCT);
-        TRAIN_COLOR = strip.Color(MAR);
-        Particle.publish("Running Trains with October");
+        TRAIN_COLOR = strip.Color(PURPLE);
+        TRAIN_ALTCOLOR = strip.Color(GREEN);
+        TRAIN_OFF_COLOR = strip.Color(ORANGE);
+        Particle.publish("Purple, Orange and Green");
+        strip.show();
     }
     if (CURRENT_MONTH == 11) {
-        TRAIN_ALTCOLOR = strip.Color(NOV);
-        TRAIN_COLOR = strip.Color(AUG);
-        Particle.publish("Running Trains with November");
+        TRAIN_COLOR = strip.Color(ORANGE);
+        TRAIN_ALTCOLOR = strip.Color(YELLOW);
+        Particle.publish("Orange and Yellow");
+        strip.show();
     }
     if (CURRENT_MONTH == 12) {
-        TRAIN_ALTCOLOR = strip.Color(DEC);
-        TRAIN_COLOR = strip.Color(MAR);
-        Particle.publish("Running Trains with December");
+        TRAIN_COLOR = strip.Color(RED);
+        TRAIN_ALTCOLOR = strip.Color(GREEN);
+        Particle.publish("Red and Green");
+        strip.show();
     }
 }
 
 void TRAIN_CYCLE(){
+    CHECK_DATE();
+    
     strip.setPixelColor(TRAIN1_POSITION, TRAIN_COLOR);
     strip.setPixelColor(TRAIN1_OFF, TRAIN_OFF_COLOR);
     strip.setPixelColor(TRAIN2_POSITION, TRAIN_ALTCOLOR);
@@ -157,6 +197,7 @@ void TRAIN_CYCLE(){
     TRAIN3_OFF ++;
     TRAIN4_POSITION ++;
     TRAIN4_OFF ++;
+    
     strip.show();
     delay(WAITTIME);
 
@@ -186,7 +227,7 @@ void TRAIN_CYCLE(){
     }
 }
 
-void setAll(byte red, byte green, byte blue) {
+void SET_ALL(byte red, byte green, byte blue) {
   for(int i = 0; i < PIXEL_COUNT; i++ ) {
     strip.setPixelColor(i, red, green, blue); 
   }
@@ -194,6 +235,8 @@ void setAll(byte red, byte green, byte blue) {
 }
 
 void rainbowCycle(int SpeedDelay) {
+  Time.zone(-8);
+  FIRST_CHECK = true;
   byte *c;
   uint16_t i, j;
 
@@ -205,7 +248,7 @@ void rainbowCycle(int SpeedDelay) {
     strip.show();
     delay(SpeedDelay);
   }
-  setAll(0,0,0);
+  SET_ALL(OFF);
 }
 
 byte * Wheel(byte WheelPos) {
